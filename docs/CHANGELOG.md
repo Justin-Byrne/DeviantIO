@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.0.1] - 2023-11-09
+### Added
+- `DeviantIO-min.js`
+
+### Fixed
+- `compile.sh`, fixed issue where `echo` escapes backslashes, mangling regexes found throughout the master script
+- `DeviantIO.js`, mangled regexes for `_regexp_urls`
+
 ## [0.0.0] - 2023-11-07
 ### Added
 - DeviantIO.js script
@@ -15,7 +23,8 @@ All notable changes to this project will be documented in this file.
 
 | Version | Date       | Commit                                                              | Comments                                                                                     |
 | :-----: | :--------: | :-----------------------------------------------------------------: | :------------------------------------------------------------------------------------------- |
-| [0.0.0] | 2020-11-07 | CURRENT                                                             | Initial upload                                                                               |
+| [0.0.1] | 2020-11-09 | CURRENT                                                             | Added minification, fixed mangled regexes                                                    |
+| [0.0.0] | 2020-11-07 | [1971950](https://github.com/Justin-Byrne/DeviantIO/commit/1971950) | Initial upload                                                                               |
 
 ---
 

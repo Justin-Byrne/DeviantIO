@@ -2,7 +2,7 @@
 
 ![issues](https://img.shields.io/github/issues/Justin-Byrne/DeviantIO)
 ![license](https://img.shields.io/github/license/Justin-Byrne/DeviantIO)
-<img src=https://img.shields.io/badge/Version-0.0.0-green />
+<img src=https://img.shields.io/badge/Version-0.0.1-green />
 <img src=https://img.shields.io/github/languages/code-size/Justin-Byrne/DeviantIO />
 
 Additional functionality for Deviant Art
@@ -25,6 +25,7 @@ Please [open an issue](https://github.com/Justin-Byrne/DeviantIO/issues/new) for
 │   ├── CHANGELOG.md
 │   └── JSDoc.md
 ├── script
+│   ├── DeviantIO-min.js
 │   └── DeviantIO.js
 ├── LICENSE
 └── README.md

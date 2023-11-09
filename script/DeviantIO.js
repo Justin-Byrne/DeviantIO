@@ -1,9 +1,9 @@
-// @program: 		DeviantIO 
-// @brief: 			Additional functionality for Deviant Art 
-// @author: 		Justin D. Byrne 
-// @email: 			justin@byrne-systems.com 
-// @version: 		0.0.0 
-// @license: 		GPL-2.0
+// @program:        DeviantIO
+// @brief:          Additional functionality for Deviant Art
+// @author:         Justin D. Byrne
+// @email:          justin@byrne-systems.com
+// @version:        0.0.1
+// @license:        GPL-2.0
 
 "use strict";
 
@@ -46,7 +46,8 @@
                 previous: [ "left"           ],
                 next:     [ "right"          ],
                 profile:  [ "up"             ],
-                redirect: [ "down"           ]
+                redirect: [ "down"           ],
+                user:     [ "/"              ]
             },
             shared_styles:
             {
@@ -73,7 +74,8 @@
             watch:     "[data-hook='user_watch_button']",
             favourite: "[data-hook='fave_button']",
             stage:     "[data-hook='art_stage']",
-            thumbs:    "[data-hook='deviation_std_thumb']"
+            thumbs:    "[data-hook='deviation_std_thumb']",
+            user:      "[data-hook='user_link']"
         }
 
         /**
@@ -112,13 +114,13 @@
         {
             site:
             {
-                home:       `${_config.deviantarturl}/(?!)`,
+                home:       `${_config.deviantarturl}/\\B`,
                 watch:      `${_config.deviantarturl}/watch/deviations`,
                 daily:      `${_config.deviantarturl}/daily-deviations`,
                 popular:    `${_config.deviantarturl}/popular/deviations`,
                 topic:      `${_config.deviantarturl}/topic/\w+`,
                 tag:        `${_config.deviantarturl}/tag/\w+`,
-                art:        `${_config.deviantarturl}/[ /]+/art/.+`
+                art:        `${_config.deviantarturl}/[^/]+/art/.+`
             },
             user:
             {
@@ -329,6 +331,17 @@
 
                     window.open ( deviantIO.config.redirect_urls [ entry ], "_blank" );
                 });
+            },
+            user: ( ) =>
+            {
+                Mousetrap.bind ( '%KEYS%', function ( event )
+                {
+                    event.preventDefault ( );
+
+                    user_button = document.querySelectorAll ( "[data-hook='user_link']" ) [ 0 ].children [ 0 ];
+
+                    user_button.click ( );
+                });
             }
         }
 
@@ -490,7 +503,7 @@
         {
             let _keys     = _config.input_hotkeys [ taskType ];
 
-            let _function = taskFunction;
+            let _function = taskFunction.toString ( );
 
             let _input    = '';
 
@@ -509,12 +522,11 @@
                 _input = `[ ${_input.replace ( /,+$/, '' )} ]`;
 
 
-
             _function = ( taskType == 'favorite' )
 
-                            ? _function.toString ( ).replace ( /\([ {]+{/, '' ).replace ( /'%KEYS%'/, _input ).replace ( /'%NEXT%'/, `'${_config.input_hotkeys.next}'` )
+                            ? _function.replace ( /\([^\{]+{/, '' ).replace ( /'%KEYS%'/, _input ).replace ( /'%NEXT%'/, `'${_config.input_hotkeys.next [ 0 ]}'` )
 
-                            : _function.toString ( ).replace ( /\([ {]+{/, '' ).replace ( /'%KEYS%'/, _input );
+                            : _function.replace ( /\([^\{]+{/, '' ).replace ( /'%KEYS%'/, _input );
 
 
             return _function.substring ( 0, _function.length - 1 );

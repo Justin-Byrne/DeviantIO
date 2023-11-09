@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script to compile project files
 
-IFS=^
+IFS=''
 
 # GLOBAL VARIABLES #############################################################
 
@@ -27,6 +27,8 @@ declare OUTPUT_JSDOCS=../docs/JSDoc
 declare OUTPUT=${OUTPUT_DIRECTORY}/DeviantIO.js
 
 ## CACHE #########################################################
+
+declare HEADER
 
 declare FILE
 
@@ -62,7 +64,9 @@ main ()
 
     get_version
 
-    compile_output
+    compile_master
+
+    compile_minified
 
     compile_readme
 
@@ -77,31 +81,29 @@ main ()
 
 ## COMPILE #######################################################
 
-function compile_header ()
+function compile_master ()
 {
-    HEADER="// @program: \t\t${VC_PACKAGE} \\n"
-    HEADER+="// @brief: \t\t\t${VC_BRIEF} \\n"
-    HEADER+="// @author: \t\tJustin D. Byrne \\n"
-    HEADER+="// @email: \t\t\tjustin@byrne-systems.com \\n"
-    HEADER+="// @version: \t\t${VERSION} \\n"
-    HEADER+="// @license: \t\tGPL-2.0\\n\\n"
+    update_master_js_file $INPUT
 
-    HEADER+="\"use strict\";"
-
-    TEMP="$(sed -e '1,8d' < $INPUT)"
-
-    FILE="${HEADER}\n${TEMP}"
-}
-
-function compile_output ()
-{
-    compile_header
-
-    echo $FILE > $OUTPUT
-
-    echo "${PROMPT} ${FG_PINK}${VC_PACKAGE} Compiling Complete \t${FG_BLUE}[${OUTPUT}]${NOCOLOR}\n"
+    echo "${PROMPT} ${FG_PINK}${VC_PACKAGE}.js Compiling Complete \t${FG_BLUE}[${OUTPUT}]${NOCOLOR}\n"
 
     afplay audio/complete.mp3
+}
+
+function compile_minified ()
+{
+    FILE_MIN=${OUTPUT_DIRECTORY}/${VC_PACKAGE}-min.js
+
+    if command -v uglifyjs
+    then
+        if $(uglifyjs ${OUTPUT} -o ${FILE_MIN} --compress --mangle); then
+            echo "\n${PROMPT} ${FG_PINK}${VC_PACKAGE} Minified Complete \t\t${FG_BLUE}[${FILE_MIN}]${NOCOLOR}\n"
+        else
+            NO_ERRORS=false
+        fi
+    fi
+
+    update_minified_js_file $FILE_MIN
 }
 
 function compile_readme ()
@@ -138,6 +140,26 @@ function compile_jsdocs ()
             NO_ERRORS=false
         fi
     fi
+}
+
+## UPDATE ########################################################
+
+function update_master_js_file ()
+{
+    sed -r -i '' -e 's/@version:.+/@version:        '${VERSION}'/' ${1}
+}
+
+function update_minified_js_file ()
+{
+    HEADER="\/** @program: \t\t${VC_PACKAGE} \\n"
+    HEADER+=" * @brief: \t\t\t${VC_BRIEF} \\n"
+    HEADER+=" * @author: \t\tJustin D. Byrne \\n"
+    HEADER+=" * @email: \t\t\tjustin@byrne-systems.com \\n"
+    HEADER+=" * @version: \t\t${VERSION} \\n"
+    HEADER+=" * @license: \t\tGPL-2.0\\n"
+    HEADER+=" *\/\\n\\n"
+
+    sed -r -i '' -e 's/"use strict"/'${HEADER}'"use strict"/' ${1}
 }
 
 ## GENERAL #######################################################
