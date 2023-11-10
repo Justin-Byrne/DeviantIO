@@ -96,7 +96,7 @@ function compile_minified ()
 
     if command -v uglifyjs
     then
-        if $(uglifyjs ${OUTPUT} -o ${FILE_MIN} --compress --mangle); then
+        if $(uglifyjs ${OUTPUT} -o ${FILE_MIN} --compress --mangle reserved=['window']); then
             echo "\n${PROMPT} ${FG_PINK}${VC_PACKAGE} Minified Complete \t\t${FG_BLUE}[${FILE_MIN}]${NOCOLOR}\n"
         else
             NO_ERRORS=false
@@ -151,15 +151,14 @@ function update_master_js_file ()
 
 function update_minified_js_file ()
 {
-    HEADER="\/** @program: \t\t${VC_PACKAGE} \\n"
-    HEADER+=" * @brief: \t\t\t${VC_BRIEF} \\n"
-    HEADER+=" * @author: \t\tJustin D. Byrne \\n"
-    HEADER+=" * @email: \t\t\tjustin@byrne-systems.com \\n"
-    HEADER+=" * @version: \t\t${VERSION} \\n"
-    HEADER+=" * @license: \t\tGPL-2.0\\n"
-    HEADER+=" *\/\\n\\n"
+    PREAMBLE="\/** \\n"
+    PREAMBLE+=" * @program: \t\t${VC_PACKAGE} \\n"
+    PREAMBLE+=" * @author: \t\tJustin D. Byrne \\n"
+    PREAMBLE+=" * @version: \t\t${VERSION} \\n"
+    PREAMBLE+=" * @license: \t\tGPL-2.0\\n"
+    PREAMBLE+=" *\/\\n\\n"
 
-    sed -r -i '' -e 's/"use strict"/'${HEADER}'"use strict"/' ${1}
+    sed -r -i '' -e 's/"use strict"/'${PREAMBLE}'"use strict"/' ${1}
 }
 
 ## GENERAL #######################################################
