@@ -42,7 +42,7 @@ Paste (either) `DeviantIO.js` or `DeviantIO-min.js` within your browser's consol
 
 #### Extension
 
-Download a JavaScript injection extension for your browser, and paste (either) `DeviantIO.js` or `DeviantIO-min.js`
+Download a JavaScript injection extension for your browser, and paste `DeviantIO.js` or `DeviantIO-min.js`
 
 #### Gist
 
@@ -56,16 +56,14 @@ There's always a live gist for this project, in case you want to import this scr
 
 ### HotKeys
 
-:warning: **Note:** only work in gallery mode
-
-| Input                              | Task                                     |
-| :--------------------------------: | ---------------------------------------- |
-| <kbd>Space</kbd>, <kbd>Enter</kbd> | :warning: Add Portrait to Favorites      |
-| <kbd>Shift</kbd>                   | :warning: Add Deviant User to Watch List |
-| <kbd>←</kbd>                       | :warning: Previous Portrait              |
-| <kbd>→</kbd>                       | :warning: Next Portrait                  |
-| <kbd>↑</kbd>                       | :warning: Back to Home or Profile        |
-| <kbd>↓</kbd>                       | Redirect to randomized URL in config     |
+| Input                              | Task                                     | Mode      |
+| :--------------------------------: | ---------------------------------------- | :-------: |
+| <kbd>Space</kbd>, <kbd>Enter</kbd> | Add Portrait to Favorites                | Gallery   |
+| <kbd>Shift</kbd>                   | Add Deviant User to Watch List           | Gallery   |
+| <kbd>←</kbd>                       | Previous Portrait                        | Gallery   |
+| <kbd>→</kbd>                       | Next Portrait                            | Gallery   |
+| <kbd>↑</kbd>                       | Back to Home or Profile                  | Gallery   |
+| <kbd>↓</kbd>                       | Redirect to randomized URL in config     | Global    |
 
 ### Configuration
 
