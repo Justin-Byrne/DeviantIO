@@ -31,7 +31,6 @@ Main configuration settings
 | config.url_reference | <code>string</code> | Present Deviant Art URL |
 | config.deviantarturl | <code>string</code> | Base Deviant Art URL |
 | config.input_hotkeys | <code>string</code> | Hotkey(s) associated with each keyboard task; @see _keyboard_tasks |
-| config.shared_styles | <code>Object</code> | Shared CSS styles for appendable UI elements |
 
 <a name="module_deviantIO..clearStatus"></a>
 

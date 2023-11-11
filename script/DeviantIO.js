@@ -2,7 +2,7 @@
 // @brief:          Additional functionality for Deviant Art
 // @author:         Justin D. Byrne
 // @email:          justin@byrne-systems.com
-// @version:        0.0.1
+// @version:        0.0.2
 // @license:        GPL-2.0
 
 "use strict";
@@ -29,7 +29,6 @@
          * @param           {string}  _config.url_reference         Present Deviant Art URL
          * @param           {string}  _config.deviantarturl         Base Deviant Art URL
          * @param           {string}  _config.input_hotkeys         Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
-         * @param           {Object}  _config.shared_styles         Shared CSS styles for appendable UI elements
          */
         let _config =
         {
@@ -45,17 +44,9 @@
                 watch:    [ "shift"          ],
                 previous: [ "left"           ],
                 next:     [ "right"          ],
-                profile:  [ "up"             ],
+                home:     [ "up"             ],
                 redirect: [ "down"           ],
                 user:     [ "/"              ]
-            },
-            shared_styles:
-            {
-                'position':           'absolute',
-                'z-index':            999,
-
-                'font-size':          '4em',
-                'transform-origin':   '50% 5em'
             }
         }
 
@@ -115,6 +106,7 @@
             site:
             {
                 home:       `${_config.deviantarturl}/\\B`,
+                search:     `${_config.deviantarturl}/search?`,
                 watch:      `${_config.deviantarturl}/watch/deviations`,
                 daily:      `${_config.deviantarturl}/daily-deviations`,
                 popular:    `${_config.deviantarturl}/popular/deviations`,
@@ -131,13 +123,28 @@
         }
 
         /**
+         * Shared CSS styles for appendable UI elements
+         * @private
+         * @global
+         * @constant        {Object} _shared_styles                 Shared styles
+         */
+        let _shared_styles =
+        {
+            'position':           'absolute',
+            'z-index':            999,
+
+            'font-size':          '4em',
+            'transform-origin':   '50% 5em'
+        }
+
+        /**
          * Appendable HTML & CSS content
          * @private
          * @global
-         * @constant        {Object} _html_elements                 Appendable HTML & CSS content
-         * @param           {Object} _html_elements.notifications   Notification elements
+         * @constant        {Object} _ui_elements                   Appendable HTML & CSS content
+         * @param           {Object} _ui_elements.notifications     Notification elements
          */
-        let _html_elements =
+        let _ui_elements =
         {
             notifications:
             {
@@ -145,7 +152,7 @@
                 {
                     css:
                     {
-                        ..._config.shared_styles,
+                        ..._shared_styles,
 
                         'animation':          'wiggle 2s linear infinite',
 
@@ -167,7 +174,7 @@
                 {
                     css:
                     {
-                        ..._config.shared_styles,
+                        ..._shared_styles,
 
                         'animation':          'bounce 1s ease-out infinite',
 
@@ -219,14 +226,14 @@
          * @param           {Object} _keyboard_tasks.watch          Watch artist task
          * @param           {Object} _keyboard_tasks.previous       Previous portrait task
          * @param           {Object} _keyboard_tasks.next           Next portrait task
-         * @param           {Object} _keyboard_tasks.profile        Profile task
+         * @param           {Object} _keyboard_tasks.home           Home task
          * @param           {Object} _keyboard_tasks.redirect       Redirect task
          */
         let _keyboard_tasks =
         {
             favorite: ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
@@ -241,12 +248,12 @@
 
                     if ( deviantIO.config.favorite_next )
 
-                        Mousetrap.trigger ( '%NEXT%' );
+                        Mousetrap.trigger ( "%NEXT%" );
                 });
             },
             watch: ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
@@ -261,7 +268,7 @@
             },
             previous: ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     deviantIO.clearStatus ( 'favourite' );
 
@@ -275,7 +282,7 @@
             },
             next:     ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     deviantIO.clearStatus ( 'favourite' );
 
@@ -287,14 +294,14 @@
                     next_button.click ( );
                 });
             },
-            profile:  ( ) =>
+            home:  ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
 
-                    let _previous = [ 'Profile', 'Back', 'Home' ];
+                    let _previous = [ 'Home', 'Back', 'Profile', 'Search' ];
 
                     let _element  = null
 
@@ -321,7 +328,7 @@
             },
             redirect: ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
@@ -334,7 +341,7 @@
             },
             user: ( ) =>
             {
-                Mousetrap.bind ( '%KEYS%', function ( event )
+                Mousetrap.bind ( "%KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
@@ -449,7 +456,7 @@
         {
             let _button      = document.getElementById ( `${type}_button` );
 
-            let _styles      = _html_elements.notifications [ type ];
+            let _styles      = _ui_elements.notifications [ type ];
 
             let _flaggedType = 'flagged' + _toTitleCase ( type ) + 'Status';
 
@@ -492,44 +499,66 @@
         }
 
         /**
-         * Sets HotKey(s) with each keyboard task; @see _config.input_keys & _keyboard_tasks
+         * Sets HotKey(s) with each keyboard task, and returns Moustrap bindings for DOM injection; @see _config.input_keys & _keyboard_tasks
          * @private
          * @name _setKeyboardTaskHotKeys
          * @function
-         * @param           {string}   taskType                     Task type
-         * @param           {Function} taskFunction                 Task function
+         * @return          {string}                                Moustrap bindings for DOM injection
          */
-        function _setKeyboardTaskHotKeys ( taskType, taskFunction )
+        function _setKeyboardTaskHotKeys ( )
         {
-            let _keys     = _config.input_hotkeys [ taskType ];
+            let _result = '';
 
-            let _function = taskFunction.toString ( );
+            let _index  = 0;
 
-            let _input    = '';
+            ////    FUNCTIONS    ///////////////////////////
 
+                /**
+                 * Binds keyboard input(s) to a keyboard task; @see _config.input_hotkeys, _keyboard_tasks
+                 * @private
+                 * @name _bindKeyboardInputs
+                 * @function
+                 * @param           {string} task                           Task type
+                 * @param           {string} func                           Task function
+                 * @return          {string}                                Key bound task function
+                 */
+                function _bindKeyboardInputs ( task, func )
+                {
+                    let _keys   = _config.input_hotkeys [ task ];
 
-            if ( _keys.length == 1 )
-
-                _input = `'${_keys [ 0 ]}'`;
-
-            else
-
-                for ( let _key in _keys )
-
-                    _input += `'${_keys [ _key ]}',`
-
-
-                _input = `[ ${_input.replace ( /,+$/, '' )} ]`;
-
-
-            _function = ( taskType == 'favorite' )
-
-                            ? _function.replace ( /\([^\{]+{/, '' ).replace ( /'%KEYS%'/, _input ).replace ( /'%NEXT%'/, `'${_config.input_hotkeys.next [ 0 ]}'` )
-
-                            : _function.replace ( /\([^\{]+{/, '' ).replace ( /'%KEYS%'/, _input );
+                    let _inputs = _getKeyboardInputs ( _keys );
 
 
-            return _function.substring ( 0, _function.length - 1 );
+                    func = ( task === 'favorite' )
+
+                               ? func.replace ( /\([^\{]+{/, '' )
+                                     .replace ( /"%KEYS%"/, _inputs )
+                                     .replace ( /"%NEXT%"/, `'${_config.input_hotkeys.next [ 0 ]}'` )
+
+                               : func.replace ( /\([^\{]+{/, '' )
+                                     .replace ( /"%KEYS%"/, _inputs );
+
+
+                    ( _index ) ? func = func.slice ( 9 ) : _index++;
+
+
+                    return func.substring ( 0, func.length - 1 );
+                }
+
+            ////    LOGIC    ///////////////////////////////
+
+                for ( let _task in _keyboard_tasks )
+                {
+                    let _function = _keyboard_tasks [ _task ].toString ( );
+
+                        _function = _bindKeyboardInputs ( _task, _function );
+
+
+                        _result += _function;
+                }
+
+
+                return _result;
         }
 
         /**
@@ -552,10 +581,7 @@
 
                         _mousetrap.type = _elementType;
 
-
-                        for ( let _task in _keyboard_tasks )
-
-                            _mousetrap.text += _setKeyboardTaskHotKeys ( _task, _keyboard_tasks [ _task ] );
+                        _mousetrap.text = _setKeyboardTaskHotKeys ( );
 
 
                         _mousetrap.onload  = ( ) => console.info ( '>> Mousetrap script has loaded !'  );
@@ -734,6 +760,36 @@
             return ( _thumbPath != undefined ) ? _thumbPath : console.warn ( 'Could not get portrait thumb\'s path !' );
         }
 
+        /**
+         * Returns formatted keyboard input(s) for Mousetrap key binding
+         * @private
+         * @name _getKeyboardInputs
+         * @function
+         * @param           {Array} keys                            Array of keyboard input(s) for one keyboard task; @see _keyboard_tasks
+         * @return          {string}                                Formatted keyboard input(s) for a Mousetrap key binding
+         */
+        function _getKeyboardInputs ( keys )
+        {
+            let _result = '';
+
+
+            if ( keys.length == 1 )
+
+                _result = `'${keys [ 0 ]}'`;
+
+            else
+
+                for ( let _key in keys )
+
+                    _result += `'${keys [ _key ]}',`
+
+
+                _result = `[ ${_result.replace ( /,+$/, '' )} ]`;
+
+
+            return _result;
+        }
+
     ////////////////////////////////////////////////////////////////////////////
     ////    GENERAL FUNCTIONS    ///////////////////////////////////////////////
 
@@ -846,6 +902,7 @@
                     break;
 
                 case 'home':
+                case 'search':
                 case 'watch':
                 case 'daily':
                 case 'popular':
@@ -896,7 +953,6 @@
                  * @param           {string}  config.url_reference      Present Deviant Art URL
                  * @param           {string}  config.deviantarturl      Base Deviant Art URL
                  * @param           {string}  config.input_hotkeys      Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
-                 * @param           {Object}  config.shared_styles      Shared CSS styles for appendable UI elements
                  */
                 config: _config
             }
