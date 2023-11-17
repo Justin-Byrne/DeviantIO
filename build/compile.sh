@@ -28,7 +28,7 @@ declare OUTPUT=${OUTPUT_DIRECTORY}/DeviantIO.js
 
 ## CACHE #########################################################
 
-declare HEADER
+declare PREAMBLE
 
 declare FILE
 
@@ -83,7 +83,7 @@ main ()
 
 function compile_master ()
 {
-    update_master_js_file $INPUT
+    update_master_js_version $INPUT
 
     echo "${PROMPT} ${FG_PINK}${VC_PACKAGE}.js Compiling Complete \t${FG_BLUE}[${OUTPUT}]${NOCOLOR}\n"
 
@@ -103,7 +103,7 @@ function compile_minified ()
         fi
     fi
 
-    update_minified_js_file $FILE_MIN
+    update_minified_js_preamble $FILE_MIN
 }
 
 function compile_readme ()
@@ -121,7 +121,7 @@ function compile_jsdoc ()
     if command -v jsdoc2md
     then
         if $(jsdoc2md ${OUTPUT} > $OUTPUT_JSDOC)
-            then echo "\n${PROMPT} ${FG_PINK}API Complete \t\t\t${FG_BLUE}[${OUTPUT_JSDOC}]${NOCOLOR}\n"
+            then echo "\n${PROMPT} ${FG_PINK}JSDoc Complete \t\t\t${FG_BLUE}[${OUTPUT_JSDOC}]${NOCOLOR}\n"
         else
             NO_ERRORS=false
         fi
@@ -135,28 +135,50 @@ function compile_jsdocs ()
     if command -v jsdoc
     then
         if (jsdoc --private $OUTPUT -d $OUTPUT_JSDOCS)
-            then echo "\n${PROMPT} ${FG_PINK}JSDoc Complete \t\t\t${FG_BLUE}[${OUTPUT_JSDOCS}]${NOCOLOR}\n"
+            then echo "\n${PROMPT} ${FG_PINK}JSDocs Complete \t\t\t${FG_BLUE}[${OUTPUT_JSDOCS}]${NOCOLOR}\n"
         else
             NO_ERRORS=false
         fi
     fi
 }
 
+function compile_preamble ()
+{
+    PREAMBLE="\/** \\n"
+    PREAMBLE+=" * ${VC_PACKAGE} - ${VC_BRIEF} \\n"
+    PREAMBLE+=" * Copyright (C) 2023  Justin D. Byrne \\n"
+    PREAMBLE+=" * \\n"
+    PREAMBLE+=" * This library is free software; you can redistribute it and\/or \\n"
+    PREAMBLE+=" * modify it under the terms of the GNU Library General Public \\n"
+    PREAMBLE+=" * License as published by the Free Software Foundation; either \\n"
+    PREAMBLE+=" * version 2 of the License, or (at your option) any later version. \\n"
+    PREAMBLE+=" * \\n"
+    PREAMBLE+=" * This library is distributed in the hope that it will be useful, \\n"
+    PREAMBLE+=" * but WITHOUT ANY WARRANTY; without even the implied warranty of \\n"
+    PREAMBLE+=" * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU \\n"
+    PREAMBLE+=" * Library General Public License for more details. \\n"
+    PREAMBLE+=" * \\n"
+    PREAMBLE+=" * You should have received a copy of the GNU Library General Public \\n"
+    PREAMBLE+=" * License along with this library; if not, write to the \\n"
+    PREAMBLE+=" * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, \\n"
+    PREAMBLE+=" * Boston, MA  02110-1301, USA. \\n"
+    PREAMBLE+=" * \\n"
+    PREAMBLE+=" * Byrne-Systems, hereby disclaims all copyright interest in \\n"
+    PREAMBLE+=" * the library '${VC_PACKAGE}' (${VC_BRIEF}) written \\n"
+    PREAMBLE+=" * by Justin D. Byrne. (justin@byrne-systems.com) \\n"
+    PREAMBLE+=" *\/ \\n\\n"
+}
+
 ## UPDATE ########################################################
 
-function update_master_js_file ()
+function update_master_js_version ()
 {
     sed -r -i '' -e 's/@version:.+/@version:        '${VERSION}'/' ${1}
 }
 
-function update_minified_js_file ()
+function update_minified_js_preamble ()
 {
-    PREAMBLE="\/** \\n"
-    PREAMBLE+=" * @program: \t\t${VC_PACKAGE} \\n"
-    PREAMBLE+=" * @author: \t\tJustin D. Byrne \\n"
-    PREAMBLE+=" * @version: \t\t${VERSION} \\n"
-    PREAMBLE+=" * @license: \t\tGPL-2.0\\n"
-    PREAMBLE+=" *\/\\n\\n"
+    compile_preamble
 
     sed -r -i '' -e 's/"use strict"/'${PREAMBLE}'"use strict"/' ${1}
 }

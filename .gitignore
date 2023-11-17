@@ -7,6 +7,9 @@
 ## Dump Folder
 _dump/
 
+## Extras
+_extras/
+
 ## Special Files
 *.sublime-build
 

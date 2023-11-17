@@ -2,7 +2,7 @@
 // @brief:          Additional functionality for Deviant Art
 // @author:         Justin D. Byrne
 // @email:          justin@byrne-systems.com
-// @version:        0.0.2
+// @version:        0.0.3
 // @license:        GPL-2.0
 
 "use strict";
@@ -20,73 +20,81 @@
         /**
          * Main configuration settings
          * @private
-         * @global
-         * @constant        {Object}  _config                       Main configurations object
-         * @param           {string}  _config.accent_colour         Favourited accent colour
-         * @param           {string}  _config.mousetrap_cdn         Mousetrap CDN address
-         * @param           {boolean} _config.favorite_next         Go to next portrait after favoriting
-         * @param           {number}  _config.time_interval         How often to update this script
-         * @param           {string}  _config.url_reference         Present Deviant Art URL
-         * @param           {string}  _config.deviantarturl         Base Deviant Art URL
-         * @param           {string}  _config.input_hotkeys         Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
+         * @constant        {Object} _config                        Main configurations object
+         * @param           {Object} _config.input_hotkeys          Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
+         * @param           {Object} _config.feature_flags          Various flags for features
+         * @param           {Array}  _config.redirect_urls          Redirect URLs
+         * @param           {Object} _config.internal_data          General abstract data for program
          */
         let _config =
         {
-            accent_colour: 'rgba(118, 228, 177, 1)',
-            mousetrap_cdn: '//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js',
-            favorite_next: true,
-            time_interval: 500,
-            url_reference: undefined,                       // Note: defined at runtime
-            deviantarturl: 'https://www.deviantart.com',
             input_hotkeys:
             {
-                favorite: [ "space", "enter" ],
-                watch:    [ "shift"          ],
-                previous: [ "left"           ],
-                next:     [ "right"          ],
-                home:     [ "up"             ],
-                redirect: [ "down"           ],
-                user:     [ "/"              ]
+                previous:  [ "a", "left"           ],       // [Portrait Mode] : Hotkey(s) to go to the previous portrait
+                next:      [ "d", "right"          ],       // [Portrait Mode] : Hotkey(s) to go to the next portrait
+                home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
+                favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
+                watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
+                expand:    [ "f", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+                user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
+                redirect:  [ "s", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
+            },
+            feature_flags:
+            {
+                favourite_to_next:                  true,   // [Portrait Mode] : Favouriting portrait will also cycle to the next portrait
+                show_notification_favourite:        true,   // [Portrait Mode] : Shows favourite notifications
+                show_notification_favourite_stage:  true,   // [Portrait Mode] : Shows favourite notification stage background as accent_colour: @see _config.internal_data.accent_colour
+                show_notification_watch:            true,   // [Portrait Mode] : Shows watch notifications
+                show_status_favourite:              true,   //  [Gallery Mode] : Shows favourite status of favourited portraits
+                skip_favourite:                     false,  // [Portrait Mode] : Skips already favourited portraits
+                skip_watch:                         false,  // [Portrait Mode] : Skips portraits that you are not already watching
+                skip_tier:                          true,   // [Portrait Mode] : Skips tier programs while cycling through portraits
+            },
+            redirect_urls:
+            [
+                "https://google.com",
+                "https://gmail.com",
+                "https://github.com",
+                "https://trello.com"
+            ],
+            internal_data:
+            {
+                accent_colour: 'rgba(118, 228, 177, 1)',            // Favourited accent colour
+                time_interval: 500,                                 // How often to update this script
+                url_reference: undefined,                           // Present Deviant Art URL; defined at runtime
+                deviantarturl: 'https://www.deviantart.com',        // Base Deviant Art URL
+                mousetrap_cdn: '//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js', // Mousetrap CDN address
+                ui_data_hooks:
+                {
+                    watch:     "[data-hook='user_watch_button']",   // Data hook for watch button
+                    favourite: "[data-hook='fave_button']",         // Data hook for favourite button
+                    stage:     "[data-hook='art_stage']",           // Data hook for background art stage of Portraits
+                    thumbs:    "[data-hook='deviation_std_thumb']", // Data hook for Portrait thumbnails
+                    user:      "[data-hook='user_link']",           // Data hook for user link
+                    action:    "[data-hook='action_bar']",          // Data hook for action bar
+                    meta:      "[data-hook='deviation_meta']"       // Data hook for deviation meta data
+                },
+                picture_rules:
+                {
+                    off:                                            // Rules for non-favourited elements
+                    {
+                        border:    'none',
+                        boxShadow: 'none',
+                        opacity:    1
+                    },
+                    on:                                             // Rules for favourited elements
+                    {
+                        border:    `2px solid %ACCENT_COLOUR%`,
+                        boxShadow: `0px 0px 5px 2px %ACCENT_COLOUR%`,
+                        opacity:    0.5
+                    }
+                }
             }
         }
 
         /**
-         * Data hooks for UI elements
-         * @private
-         * @global
-         * @constant        {Object} _ui_data_hooks                 Data hooks
-         * @param           {string} _ui_data_hooks.watch           Data hook for watch button
-         * @param           {string} _ui_data_hooks.favourite       Data hook for favourite button
-         * @param           {string} _ui_data_hooks.stage           Data hook for background art stage of Portraits
-         * @param           {string} _ui_data_hooks.thumbs          Data hook for Portrait thumbnails
-         */
-        let _ui_data_hooks =
-        {
-            watch:     "[data-hook='user_watch_button']",
-            favourite: "[data-hook='fave_button']",
-            stage:     "[data-hook='art_stage']",
-            thumbs:    "[data-hook='deviation_std_thumb']",
-            user:      "[data-hook='user_link']"
-        }
-
-        /**
-         * Redirect URLs
-         * @private
-         * @global
-         * @constant        {Array} _redirect_urls                  Redirect URLs
-         */
-        let _redirect_urls =
-        [
-            "https://google.com",
-            "https://gmail.com",
-            "https://github.com",
-            "https://trello.com"
-        ]
-
-        /**
          * Regular expressions for page identification
          * @private
-         * @global
          * @constant        {Object} _regexp_urls                   Regular expressions
          * @param           {Object} _regexp_urls.site              Site regular expressions
          * @param           {string} _regexp_urls.site.home         RegExp for homepage
@@ -105,27 +113,27 @@
         {
             site:
             {
-                home:       `${_config.deviantarturl}/\\B`,
-                search:     `${_config.deviantarturl}/search?`,
-                watch:      `${_config.deviantarturl}/watch/deviations`,
-                daily:      `${_config.deviantarturl}/daily-deviations`,
-                popular:    `${_config.deviantarturl}/popular/deviations`,
-                topic:      `${_config.deviantarturl}/topic/\w+`,
-                tag:        `${_config.deviantarturl}/tag/\w+`,
-                art:        `${_config.deviantarturl}/[^/]+/art/.+`
+                home:       `${_config.internal_data.deviantarturl}/\\B`,
+                search:     `${_config.internal_data.deviantarturl}/search?`,
+                watch:      `${_config.internal_data.deviantarturl}/watch/deviations`,
+                daily:      `${_config.internal_data.deviantarturl}/daily-deviations`,
+                popular:    `${_config.internal_data.deviantarturl}/popular/deviations`,
+                topic:      `${_config.internal_data.deviantarturl}/topic/\\w+`,
+                tag:        `${_config.internal_data.deviantarturl}/tag/\\w+`,
+                art:        `${_config.internal_data.deviantarturl}/[^/]+/art/.+`,
+                tier:       `${_config.internal_data.deviantarturl}/[^/]+/tier`,
             },
             user:
             {
-                favourites: `${_config.deviantarturl}/(?!watch|daily|tag|popular)\w+/?favourites`,
-                gallery:    `${_config.deviantarturl}/(?!watch|daily|tag|popular)\w+/?gallery`,
-                home:       `${_config.deviantarturl}/(?!watch|daily|tag|popular)\w+`
+                favourites: `${_config.internal_data.deviantarturl}/(?!watch|daily|tag|popular)\\w+/favourites`,
+                gallery:    `${_config.internal_data.deviantarturl}/(?!watch|daily|tag|popular)\\w+/gallery`,
+                home:       `${_config.internal_data.deviantarturl}/(?!watch|daily|tag|popular)\\w+`
             }
         }
 
         /**
          * Shared CSS styles for appendable UI elements
          * @private
-         * @global
          * @constant        {Object} _shared_styles                 Shared styles
          */
         let _shared_styles =
@@ -134,13 +142,11 @@
             'z-index':            999,
 
             'font-size':          '4em',
-            'transform-origin':   '50% 5em'
         }
 
         /**
          * Appendable HTML & CSS content
          * @private
-         * @global
          * @constant        {Object} _ui_elements                   Appendable HTML & CSS content
          * @param           {Object} _ui_elements.notifications     Notification elements
          */
@@ -156,8 +162,7 @@
 
                         'animation':          'wiggle 2s linear infinite',
 
-                        'left':               'calc(77% - 1em)',
-                        'top':                'calc(183% - 0em)',
+                        'right':              '1em',
                     },
                     animation: '@keyframes wiggle' +
                                '{' +
@@ -178,157 +183,186 @@
 
                         'animation':          'bounce 1s ease-out infinite',
 
-                        'left':               'calc(3% - 0em)',
-                        'top':                'calc(183% - 0em)',
-
-                        'transform-origin':   '50% 5em'
+                        'left':               '1em',
                     },
                     animation: '@keyframes bounce' +
                                '{' +
-                                     '0%   { transform: translateY(0);     }' +
-                                     '50%  { transform: translateY(-10px); }' +
-                                     '100% { transform: translateY(0);     }' +
+                                   '0%   { transform: scale(0.75); }' +
+                                   '100% { transform: scale(1);    }' +
                                '}'
                 }
-            }
-        }
-
-        /**
-         * CSS rules for accented portrait elements
-         * @private
-         * @global
-         * @constant        {Object} _portrait_rules                Rules for accented portrait elements
-         * @param           {Object} _portrait_rules.off            Rules for non-favorited elements
-         * @param           {Object} _portrait_rules.on             Rules for favorited elements
-         */
-        let _portrait_rules =
-        {
-            off:
-            {
-                border:       'none',
-                boxShadow:    'none',
-                opacity:      1
             },
-            on:
+            status:
             {
-                border:       `2px solid ${_config.accent_colour}`,
-                boxShadow:    `0px 0px 5px 2px ${_config.accent_colour}`,
-                opacity:      0.5
+                favourite:
+                {
+                    css:
+                    {
+                        ..._shared_styles,
+                    }
+                }
+            },
+            icons:
+            {
+                favourite: '❤️',
+                watch:     '🔍'
             }
         }
 
         /**
          * Keyboard HotKey tasks
          * @private
-         * @global
          * @constant        {Object} _keyboard_tasks                Keyboard tasks
-         * @param           {Object} _keyboard_tasks.favorite       Favorite task
-         * @param           {Object} _keyboard_tasks.watch          Watch artist task
          * @param           {Object} _keyboard_tasks.previous       Previous portrait task
          * @param           {Object} _keyboard_tasks.next           Next portrait task
          * @param           {Object} _keyboard_tasks.home           Home task
+         * @param           {Object} _keyboard_tasks.favourite      Favorite task
+         * @param           {Object} _keyboard_tasks.watch          Watch artist task
+         * @param           {Object} _keyboard_tasks.expand         Expand task
+         * @param           {Object} _keyboard_tasks.user           User task
          * @param           {Object} _keyboard_tasks.redirect       Redirect task
          */
         let _keyboard_tasks =
         {
-            favorite: ( ) =>
-            {
-                Mousetrap.bind ( "%KEYS%", function ( event )
-                {
-                    event.preventDefault ( );
-
-
-                    deviantIO.clearStatus ( 'favourite' );
-
-
-                    fave_button = document.querySelectorAll ( "[data-hook='fave_button']" ) [ 0 ];
-
-                    fave_button.click ( );
-
-
-                    if ( deviantIO.config.favorite_next )
-
-                        Mousetrap.trigger ( "%NEXT%" );
-                });
-            },
-            watch: ( ) =>
-            {
-                Mousetrap.bind ( "%KEYS%", function ( event )
-                {
-                    event.preventDefault ( );
-
-
-                    deviantIO.clearStatus ( 'watch' );
-
-
-                    watch_button = document.querySelectorAll ( "[data-hook='user_watch_button']" ) [ 0 ];
-
-                    watch_button.click ( );
-                });
-            },
             previous: ( ) =>
             {
-                Mousetrap.bind ( "%KEYS%", function ( event )
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
                 {
-                    deviantIO.clearStatus ( 'favourite' );
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        deviantIO.clearNotification ( 'favourite' );
 
-                    deviantIO.clearStatus ( 'watch'     );
+                        deviantIO.clearNotification ( 'watch'     );
 
 
-                    prev_button = document.querySelectorAll ( "[data-hook='arrowL']" ) [ 0 ].children [ 0 ];
+                        let _prev_button = document.querySelectorAll ( "[data-hook='arrowL']" ) [ 0 ].children [ 0 ];
 
-                    prev_button.click ( );
+                            _prev_button.click ( );
+                    }
                 });
             },
             next:     ( ) =>
             {
-                Mousetrap.bind ( "%KEYS%", function ( event )
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
                 {
-                    deviantIO.clearStatus ( 'favourite' );
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        deviantIO.clearNotification ( 'favourite' );
 
-                    deviantIO.clearStatus ( 'watch'     );
+                        deviantIO.clearNotification ( 'watch'     );
 
 
-                    next_button = document.querySelectorAll ( "[data-hook='arrowR']" ) [ 0 ].children [ 0 ];
+                        let _next_button = document.querySelectorAll ( "[data-hook='arrowR']" ) [ 0 ].children [ 0 ];
 
-                    next_button.click ( );
+                            _next_button.click ( );
+                    }
                 });
             },
-            home:  ( ) =>
+            home:     ( ) =>
             {
-                Mousetrap.bind ( "%KEYS%", function ( event )
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
+                {
+                    event.preventDefault ( );
+
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        let _previous = [ 'Home', 'Back', 'Profile', 'Search' ];
+
+                        let _element  = null
+
+
+                        for ( let _main of _previous )
+
+                            try
+                            {
+                              _element = document.evaluate (
+                                            `//span[text()='${_main}']`,
+                                            document,
+                                            null,
+                                            XPathResult.FIRST_ORDERED_NODE_TYPE,
+                                            null
+                                        ).singleNodeValue.parentElement;
+                            }
+                            catch ( e ) { }
+
+
+                        if ( _element != null )
+
+                            _element.click ( );
+                    }
+                });
+            },
+            favourite: ( ) =>
+            {
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
 
-                    let _previous = [ 'Home', 'Back', 'Profile', 'Search' ];
-
-                    let _element  = null
-
-
-                    for ( let _main of _previous )
-
-                        try
-                        {
-                          _element = document.evaluate (
-                                        `//span[text()='${_main}']`,
-                                        document,
-                                        null,
-                                        XPathResult.FIRST_ORDERED_NODE_TYPE,
-                                        null
-                                    ).singleNodeValue.parentElement;
-                        }
-                        catch ( e ) { }
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        deviantIO.clearNotification ( 'favourite' );
 
 
-                    if ( _element != null )
+                        let _fave_button = document.querySelectorAll ( "[data-hook='fave_button']" ) [ 0 ];
 
-                        _element.click ( );
+                            _fave_button.click ( );
+
+
+                        if ( deviantIO.config.feature_flags.favourite_to_next )
+
+                            Mousetrap.trigger ( "%NEXT%" );
+                    }
+                });
+            },
+            watch:    ( ) =>
+            {
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
+                {
+                    event.preventDefault ( );
+
+
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        deviantIO.clearNotification ( 'watch' );
+
+
+                        let _watch_button = document.querySelectorAll ( "[data-hook='user_watch_button']" ) [ 0 ];
+
+                            _watch_button.click ( );
+                    }
+                });
+            },
+            expand:   ( ) =>
+            {
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
+                {
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+
+                        deviantIO.setExpand ( );
+                });
+            },
+            user: ( ) =>
+            {
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
+                {
+                    event.preventDefault ( );
+
+
+                    if ( deviantIO.getPageType ( ).type == 'art' )
+                    {
+                        let _deviant_meta = document.querySelectorAll ( "[data-hook='deviation_meta']" ) [ 0 ];
+
+                        let _href         = _deviant_meta.querySelectorAll ( "[data-hook='user_link']" ) [ 0 ].href;
+
+
+                        window.open ( `${_href}/gallery`, "_blank" );
+                    }
                 });
             },
             redirect: ( ) =>
             {
-                Mousetrap.bind ( "%KEYS%", function ( event )
+                Mousetrap.bind ( "%HOT_KEYS%", function ( event )
                 {
                     event.preventDefault ( );
 
@@ -338,329 +372,456 @@
 
                     window.open ( deviantIO.config.redirect_urls [ entry ], "_blank" );
                 });
-            },
-            user: ( ) =>
-            {
-                Mousetrap.bind ( "%KEYS%", function ( event )
-                {
-                    event.preventDefault ( );
-
-                    user_button = document.querySelectorAll ( "[data-hook='user_link']" ) [ 0 ].children [ 0 ];
-
-                    user_button.click ( );
-                });
             }
         }
 
     ////////////////////////////////////////////////////////////////////////////
     ////    SETTERS    /////////////////////////////////////////////////////////
 
-        /**
-         * Append MouseTrap CDN to present DOM
-         * @private
-         * @name _setMouseTrap
-         * @function
-         */
-        function _setMouseTrap ( )
-        {
-            let mousetrap = document.createElement ( 'script' );
+        ////    NOTIFICATION    ////////////////////////////
 
-                mousetrap.setAttribute ( 'src', _config.mousetrap_cdn );
-
-                document.head.appendChild ( mousetrap );
-        }
-
-        /**
-         * Set's the present URL under _config.url_reference
-         * @private
-         * @name _setUrlReference
-         * @function
-         */
-        function _setUrlReference ( )
-        {
-            let url = window.location.href
-
-
-            if ( url != _config.url_reference )
+            /**
+             * Sets a notification animation
+             * @private
+             * @name _setNotificationAnimation
+             * @function
+             * @param           {Object} styles                         CSS styles object
+             */
+            function _setNotificationAnimation ( styles )
             {
-                _config.url_reference = url;
+                let _script = document.createElement ( 'style' );
 
-                localStorage.clear ( );
+                    _script.type      = 'text/css';
+
+                    _script.innerHTML = styles.animation;
+
+
+                document.getElementsByTagName ( 'head' ) [ 0 ].appendChild ( _script );
             }
-        }
 
-        /**
-         * Sets a status animation
-         * @private
-         * @name _setStatusAnimation
-         * @function
-         * @param           {Object} styles                         CSS styles object
-         */
-        function _setStatusAnimation ( styles )
-        {
-            let _script = document.createElement ( 'style' );
+            /**
+             * Sets a button for a notification type
+             * @private
+             * @name _setNotificationButton
+             * @function
+             * @param           {string} type                           Type of notification
+             * @param           {Object} styles                         CSS styles object
+             */
+            function _setNotificationButton ( type, styles )
+            {
+                let _button = document.createElement ( 'span' );
 
-                _script.type      = 'text/css';
+                    _button.id            = `${type}_button`;
 
-                _script.innerHTML = styles.animation;
+                    _button.innerHTML     = ( type == 'favourite' ) ? _ui_elements.icons.favourite : _ui_elements.icons.watch;
 
-
-            document.getElementsByTagName ( 'head' ) [ 0 ].appendChild ( _script );
-        }
-
-        /**
-         * Sets a button for a status type
-         * @private
-         * @name _setStatusButton
-         * @function
-         * @param           {string} type                           Type of status
-         * @param           {Object} styles                         CSS styles object
-         */
-        function _setStatusButton ( type, styles )
-        {
-            let _button = document.createElement ( 'span' );
-
-                _button.id            = `${type}_button`;
-
-                _button.innerHTML     = ( type == 'favourite' ) ? '❤️' : '🔍';
-
-                _button.style.cssText = _jsonToCss ( styles.css );
+                    _button.style.cssText = _jsonToCss ( styles.css );
 
 
-            document.getElementsByTagName ( 'header' ) [ 0 ].appendChild ( _button );
-        }
+                document.querySelectorAll ( _config.internal_data.ui_data_hooks.stage ) [ 0 ].appendChild ( _button )
+            }
 
-        /**
-         * Sets both Button and Animation elements for a status type
-         * @private
-         * @name _setStatusHTMLElement
-         * @function
-         * @param           {string} type                           Type of status
-         * @param           {Object} styles                         CSS styles object
-         */
-        function _setStatusHTMLElement ( type, styles )
-        {
-            _setStatusAnimation ( styles );
+            /**
+             * Sets both Button and Animation elements for a notification type
+             * @private
+             * @name _setNotificationHTMLElement
+             * @function
+             * @param           {string} type                           Type of notification
+             * @param           {Object} styles                         CSS styles object
+             */
+            function _setNotificationHTMLElement ( type, styles )
+            {
+                _setNotificationAnimation ( styles );
 
-            _setStatusButton    ( type, styles );
-        }
+                _setNotificationButton    ( type, styles );
+            }
 
-        /**
-         * Sets a status type
-         * @private
-         * @name _setStatus
-         * @function
-         * @param           {string} type                           Type of status
-         */
-        function _setStatus ( type )
-        {
-            let _button      = document.getElementById ( `${type}_button` );
+            /**
+             * Sets a notification type
+             * @private
+             * @name _setNotification
+             * @function
+             * @param           {string} type                           Type of notification
+             */
+            function _setNotification ( type )
+            {
+                let _button      = document.getElementById ( `${type}_button` );
 
-            let _styles      = _ui_elements.notifications [ type ];
+                let _styles      = _ui_elements.notifications [ type ];
 
-            let _flaggedType = 'flagged' + _toTitleCase ( type ) + 'Status';
-
-            let _artStage    = document.querySelectorAll ( _ui_data_hooks.stage ) [ 0 ];
-
-                _artStage.style.backgroundColor = ( type == 'favourite' ) ? _config.accent_colour : '';
+                let _flaggedType = 'flagged' + _toTitleCase ( type ) + 'Status';
 
 
-            if ( _button == null )
-
-                _setStatusHTMLElement ( type, _styles );
-
-
-            localStorage.setItem ( _flaggedType, 'yes' );
-        }
-
-        /**
-         * Sets portrait thumb styles
-         * @private
-         * @name _setPortraitThumbStyles
-         * @function
-         * @param           {Object} portraitThumb                  Portrait thumb element
-         */
-        function _setPortraitThumbStyles ( portraitThumb )
-        {
-            let _path = _getPortraitThumbPath ( portraitThumb );
-
-
-            if ( /fill-rule=\"evenodd\"/.test ( _path ) )
-
-                for ( let _rule in _portrait_rules.off )
-
-                    portraitThumb.style [ _rule ] = _portrait_rules.off [ _rule ];
-
-            else
-
-                for ( let _rule in _portrait_rules.on  )
-
-                    portraitThumb.style [ _rule ] = _portrait_rules.on  [ _rule ];
-        }
-
-        /**
-         * Sets HotKey(s) with each keyboard task, and returns Moustrap bindings for DOM injection; @see _config.input_keys & _keyboard_tasks
-         * @private
-         * @name _setKeyboardTaskHotKeys
-         * @function
-         * @return          {string}                                Moustrap bindings for DOM injection
-         */
-        function _setKeyboardTaskHotKeys ( )
-        {
-            let _result = '';
-
-            let _index  = 0;
-
-            ////    FUNCTIONS    ///////////////////////////
-
-                /**
-                 * Binds keyboard input(s) to a keyboard task; @see _config.input_hotkeys, _keyboard_tasks
-                 * @private
-                 * @name _bindKeyboardInputs
-                 * @function
-                 * @param           {string} task                           Task type
-                 * @param           {string} func                           Task function
-                 * @return          {string}                                Key bound task function
-                 */
-                function _bindKeyboardInputs ( task, func )
+                if ( type === 'favourite' && _config.feature_flags.show_notification_favourite_stage )
                 {
-                    let _keys   = _config.input_hotkeys [ task ];
+                    let _artStage = document.querySelectorAll ( _config.internal_data.ui_data_hooks.stage ) [ 0 ];
 
-                    let _inputs = _getKeyboardInputs ( _keys );
-
-
-                    func = ( task === 'favorite' )
-
-                               ? func.replace ( /\([^\{]+{/, '' )
-                                     .replace ( /"%KEYS%"/, _inputs )
-                                     .replace ( /"%NEXT%"/, `'${_config.input_hotkeys.next [ 0 ]}'` )
-
-                               : func.replace ( /\([^\{]+{/, '' )
-                                     .replace ( /"%KEYS%"/, _inputs );
-
-
-                    ( _index ) ? func = func.slice ( 9 ) : _index++;
-
-
-                    return func.substring ( 0, func.length - 1 );
-                }
-
-            ////    LOGIC    ///////////////////////////////
-
-                for ( let _task in _keyboard_tasks )
-                {
-                    let _function = _keyboard_tasks [ _task ].toString ( );
-
-                        _function = _bindKeyboardInputs ( _task, _function );
-
-
-                        _result += _function;
+                        _artStage.style.backgroundColor = _config.internal_data.accent_colour;
                 }
 
 
-                return _result;
-        }
+                if ( _button == null )
 
-        /**
-         * Sets Mousetrap & DeviantIO listeners to the DOM's window element
-         * @private
-         * @name _setWindowListener
-         * @function
-         */
-        function _setWindowListener ( )
-        {
-            let _window = window;
+                    if ( _config.feature_flags [ `show_notification_${type}` ] )
 
-                _window.addEventListener ( 'load', ( ) =>
-                {
-                    let _elementType = 'text/javascript';
-
-                    ////    MOUSE TRAP    //////////////////////////////////////
-
-                    let _mousetrap      = document.createElement ( 'script' );
-
-                        _mousetrap.type = _elementType;
-
-                        _mousetrap.text = _setKeyboardTaskHotKeys ( );
+                        _setNotificationHTMLElement ( type, _styles );
 
 
-                        _mousetrap.onload  = ( ) => console.info ( '>> Mousetrap script has loaded !'  );
+                localStorage.setItem ( _flaggedType, 'yes' );
+            }
 
-                        _mousetrap.onerror = ( ) => console.warn ( '>> Mousetrap script has errored !' );
+        ////    LISTENERS    ///////////////////////////////
 
+            /**
+             * Sets Mousetrap & DeviantIO listeners to the DOM's window element
+             * @private
+             * @name _setWindowListener
+             * @function
+             */
+            function _setWindowListener ( )
+            {
+                let _window = window;
 
-                        document.body.appendChild ( _mousetrap );
-
-                    ////    USER DEFINED    ////////////////////////////////////
-
-                    let _deviantIO         = document.createElement ( 'script' );
-
-                        _deviantIO.type    = _elementType;
-
-                        _deviantIO.text    = setInterval ( _main, _config.time_interval );
-
-
-                        _deviantIO.onload  = ( ) => console.info ( '>> DeviantIO script has loaded !'  );
-
-                        _deviantIO.onerror = ( ) => console.warn ( '>> DeviantIO script has errored !' );
-
-
-                        document.body.appendChild ( _deviantIO );
-                } );
-        }
-
-        /**
-         * Sets listener for favourite button within portrait mode
-         * @private
-         * @name _setFavouriteButtonListener
-         * @function
-         */
-        function _setFavouriteButtonListener ( )
-        {
-            let _uiFavouriteButtons = document.querySelectorAll ( deviantIO.config.ui_data_hooks.favourite );
-
-
-                for ( let _uiFavouriteButton of _uiFavouriteButtons )
-
-                    _uiFavouriteButton.addEventListener ( 'click', ( ) =>
+                    _window.addEventListener ( 'load', ( ) =>
                     {
-                        deviantIO.checkStatus ( 'favourite' );
-                    } );
-        }
+                        let _elementType = 'text/javascript';
 
-        /**
-         * Sets listener for watch button within portrait mode
-         * @private
-         * @name _setWatchButtonListener
-         * @function
-         */
-        function _setWatchButtonListener ( )
-        {
-            let _uiWatchButtons = document.querySelectorAll ( deviantIO.config.ui_data_hooks.watch );
+                        ////    MOUSE TRAP    //////////////////////////////////////
+
+                        let _mousetrap      = document.createElement ( 'script' );
+
+                            _mousetrap.type = _elementType;
+
+                            _mousetrap.text = _setKeyboardTaskHotKeys ( );
+
+
+                            _mousetrap.onload  = ( ) => console.info ( '>> Mousetrap script has loaded !'  );
+
+                            _mousetrap.onerror = ( ) => console.warn ( '>> Mousetrap script has errored !' );
+
+
+                            document.body.appendChild ( _mousetrap );
+
+                        ////    USER DEFINED    ////////////////////////////////////
+
+                        let _deviantIO         = document.createElement ( 'script' );
+
+                            _deviantIO.type    = _elementType;
+
+                            _deviantIO.text    = setInterval ( _main, _config.internal_data.time_interval );
+
+
+                            _deviantIO.onload  = ( ) => console.info ( '>> DeviantIO script has loaded !'  );
+
+                            _deviantIO.onerror = ( ) => console.warn ( '>> DeviantIO script has errored !' );
+
+
+                            document.body.appendChild ( _deviantIO );
+                    } );
+            }
+
+            /**
+             * Sets listener for favourite button within portrait mode
+             * @private
+             * @name _setFavouriteButtonListener
+             * @function
+             */
+            function _setFavouriteButtonListener ( )
+            {
+                let _uiFavouriteButtons = document.querySelectorAll ( _config.internal_data.ui_data_hooks.favourite );
+
+
+                    for ( let _uiFavouriteButton of _uiFavouriteButtons )
+
+                        _uiFavouriteButton.addEventListener ( 'click', ( ) =>
+                        {
+                            deviantIO.checkNotification ( 'favourite' );
+                        } );
+            }
+
+            /**
+             * Sets listener for watch button within portrait mode
+             * @private
+             * @name _setWatchButtonListener
+             * @function
+             */
+            function _setWatchButtonListener ( )
+            {
+                let _uiWatchButtons = document.querySelectorAll ( _config.internal_data.ui_data_hooks.watch );
 
 
                 for ( let _uiWatchButton of _uiWatchButtons )
 
                     _uiWatchButton.addEventListener ( 'click', ( ) =>
                     {
-                        deviantIO.checkStatus ( 'watch' );
+                        deviantIO.checkNotification ( 'watch' );
                     } );
-        }
+            }
 
-        /**
-         * Sets all event listeners
-         * @private
-         * @name _setEventListeners
-         * @function
-         */
-        function _setEventListeners ( )
-        {
-            _setWindowListener          ( );
+            /**
+             * Sets all event listeners
+             * @private
+             * @name _setEventListeners
+             * @function
+             */
+            function _setEventListeners ( )
+            {
+                _setWindowListener          ( );
 
-            _setFavouriteButtonListener ( );
+                _setFavouriteButtonListener ( );
 
-            _setWatchButtonListener     ( );
-        }
+                _setWatchButtonListener     ( );
+            }
+
+        ////    GENERAL    /////////////////////////////////
+
+            /**
+             * Append MouseTrap CDN to present DOM
+             * @private
+             * @name _setMouseTrap
+             * @function
+             */
+            function _setMouseTrap ( )
+            {
+                let _mousetrap = document.createElement ( 'script' );
+
+                    _mousetrap.setAttribute ( 'src', _config.internal_data.mousetrap_cdn );
+
+
+                document.head.appendChild ( _mousetrap );
+            }
+
+            /**
+             * Sets the present URL under _config.url_reference
+             * @private
+             * @name _setUrlReference
+             * @function
+             */
+            function _setUrlReference ( )
+            {
+                let _url       = window.location.href
+
+                let _reference = _config.internal_data.url_reference;
+
+
+                if ( _url != _reference )
+                {
+                    _reference = _url;
+
+                    localStorage.clear ( );
+                }
+            }
+
+            /**
+             * Sets portrait thumb icon
+             * @private
+             * @name _setPortraitThumbIcon
+             * @function
+             * @param           {Object} portraitThumb                  Portrait thumb element
+             */
+            function _setPortraitThumbIcon ( portraitThumb )
+            {
+                let _portraitContainer = portraitThumb.children [ 0 ].children [ 0 ];
+
+                let _styles            = _ui_elements.status.favourite;
+
+                let _div               = document.createElement ( 'div' );
+
+                    _div.className     = 'io_favourite';
+
+                    _div.innerHTML     = _ui_elements.icons.favourite;
+
+                    _div.style.cssText = _jsonToCss ( _styles.css );
+
+
+                if ( _portraitContainer.children.length == 1 )
+
+                    _portraitContainer.appendChild ( _div );
+            }
+
+            /**
+             * Sets general UI styles
+             * @private
+             * @name _setGeneralStyles
+             * @function
+             */
+            function _setGeneralStyles ( )
+            {
+                let _styles = document.createElement ( 'style' );
+
+                    _styles.innerText = '.io_favourite' +
+                                        '{' +
+                                            'animation: bounce 1s ease-out infinite;' +
+                                        '}' +
+                                        ' ' +
+                                        '@keyframes bounce' +
+                                        '{' +
+                                            '0%   { transform: scale(0.75); }' +
+                                            '100% { transform: scale(1);    }' +
+                                        '}'
+
+                document.head.appendChild ( _styles );
+            }
+
+            /**
+             * Sets portrait thumb styles
+             * @private
+             * @name _setPortraitThumbStyles
+             * @function
+             * @param           {Object} portraitThumb                  Portrait thumb element
+             */
+            function _setPortraitThumbStyles ( portraitThumb )
+            {
+                let _path  = _getPortraitThumbPath ( portraitThumb );
+
+                let _rules = _config.internal_data.picture_rules;
+
+
+                if ( /fill-rule=\"evenodd\"/.test ( _path ) )
+                {
+                    for ( let _rule in _rules.off )
+
+                        portraitThumb.style [ _rule ] = _rules.off [ _rule ];
+                }
+                else
+                {
+                    _setPortraitThumbIcon ( portraitThumb );
+
+
+                    for ( let _rule in _rules.on  )
+                    {
+                        let _css = _rules.on [ _rule ];
+
+                            _css = _setTemplateVariable ( _css, '%ACCENT_COLOUR%' );
+
+
+                        portraitThumb.style [ _rule ] = _css;
+                    }
+                }
+            }
+
+            /**
+             * Sets HotKey(s) with each keyboard task, and returns Moustrap bindings for DOM injection; @see _config.input_keys & _keyboard_tasks
+             * @private
+             * @name _setKeyboardTaskHotKeys
+             * @function
+             * @return          {string}                                Moustrap bindings for DOM injection
+             */
+            function _setKeyboardTaskHotKeys ( )
+            {
+                let _result = '';
+
+                let _index  = 0;
+
+                ////    FUNCTIONS    ///////////////////////////
+
+                    /**
+                     * Binds keyboard input(s) to a keyboard task; @see _config.input_hotkeys, _keyboard_tasks
+                     * @private
+                     * @name _bindKeyboardInputs
+                     * @function
+                     * @param           {string} task                           Task type
+                     * @param           {string} func                           Task function
+                     * @return          {string}                                Key bound task function
+                     */
+                    function _bindKeyboardInputs ( task, func )
+                    {
+                        let _keys   = _config.input_hotkeys [ task ];
+
+                        let _inputs = _getKeyboardInputs ( _keys );
+
+
+                        func = ( task === 'favourite' )
+
+                                   ? func.replace ( /\([^\{]+{/, '' )
+                                         .replace ( /"%HOT_KEYS%"/, _inputs )
+                                         .replace ( /"%NEXT%"/, `'${_config.input_hotkeys.next [ 0 ]}'` )
+
+                                   : func.replace ( /\([^\{]+{/, '' )
+                                         .replace ( /"%HOT_KEYS%"/, _inputs );
+
+
+                        ( _index ) ? func = func.slice ( 9 ) : _index++;
+
+
+                        return func.substring ( 0, func.length - 1 );
+                    }
+
+                ////    LOGIC    ///////////////////////////////
+
+                    for ( let _task in _keyboard_tasks )
+                    {
+                        let _function = _keyboard_tasks [ _task ].toString ( );
+
+                            _function = _bindKeyboardInputs ( _task, _function );
+
+
+                            _result += _function;
+                    }
+
+
+                    return _result;
+            }
+
+            /**
+             * Sets whether portrait mode is expanded or not
+             * @private
+             * @name _setExpand
+             * @function
+             */
+            function _setExpand ( )
+            {
+                let _artStage   = document.querySelectorAll ( deviantIO.config.internal_data.ui_data_hooks.stage ) [ 0 ];
+
+                let _mainWindow = _artStage.parentElement;
+
+                    _mainWindow.style.width = ( _mainWindow.style.width == '' ) ? '100%' : '';
+
+
+                let _elements =
+                {
+                    header:         { display: 'flex' , element: document.getElementsByTagName ( 'header' ) [ 0 ]                                                                                     },
+
+                    contributing:   { display: 'block', element: _mainWindow.nextElementSibling                                                                                                       },
+
+                    support:        { display: 'block', element: _artStage.nextElementSibling                                                                                                         },
+
+                    action:         { display: 'flex' , element: document.querySelectorAll ( deviantIO.config.internal_data.ui_data_hooks.action ) [ 0 ]                                              },
+
+                    meta:           { display: 'flex' , element: document.querySelectorAll ( deviantIO.config.internal_data.ui_data_hooks.meta ) [ 0 ].parentElement.parentElement                    },
+
+                    comments:       { display: 'flex' , element: document.querySelectorAll ( deviantIO.config.internal_data.ui_data_hooks.meta ) [ 0 ].parentElement.parentElement.nextElementSibling },
+
+                    footer:         { display: 'flex' , element: document.getElementsByTagName ( 'footer' ) [ 0 ]                                                                                     }
+                }
+
+
+                for ( let _element in _elements )
+                {
+                    let _Element      = _elements [ _element ];
+
+                    let _ElementStyle = window.getComputedStyle ( _Element.element );
+
+
+                    _Element.element.style.display = ( _ElementStyle.display == _Element.display ) ? 'none' : _Element.display;
+                }
+            }
+
+            /**
+             * Sets a template variable located within the passed string
+             * @private
+             * @name  _setTemplateVariable
+             * @param           {string} css                            CSS declarations
+             * @param           {string} variable                       Template variable to re-assign
+             */
+            function _setTemplateVariable ( css, variable )
+            {
+                return ( typeof ( css ) == 'string' && css.includes ( variable ) )
+
+                           ? css.replace ( variable, _config.internal_data [ variable.toLowerCase ( ).replace ( /%/g, '' ) ] )
+
+                           : css;
+            }
 
     ////////////////////////////////////////////////////////////////////////////
     ////    GETTERS    /////////////////////////////////////////////////////////
@@ -695,16 +856,16 @@
         }
 
         /**
-         * Returns the status of a particular status type
+         * Returns the notification of a particular notification type
          * @private
          * @name _getStatus
          * @function
-         * @param           {string} type                           Status type
+         * @param           {string} type                           Notification type
          * @return          {boolean}                               True | False
          */
         function _getStatus ( type )
         {
-            let _element = document.querySelectorAll ( _ui_data_hooks [ type ] ) [ 0 ]
+            let _element = document.querySelectorAll ( _config.internal_data.ui_data_hooks [ type ] ) [ 0 ]
 
 
             switch ( type )
@@ -728,7 +889,7 @@
          */
         function _getPortraitThumbs ( )
         {
-            let _result = document.querySelectorAll ( _ui_data_hooks.thumbs );
+            let _result = document.querySelectorAll ( _config.internal_data.ui_data_hooks.thumbs );
 
 
             return ( _result.length > 0 )
@@ -749,6 +910,7 @@
         function _getPortraitThumbPath ( portraitThumb )
         {
             let _thumbPath = undefined;
+
 
             try
             {
@@ -832,20 +994,20 @@
         }
 
         /**
-         * Clears a status type
+         * Clears a notification type
          * @private
-         * @name _clearStatus
+         * @name _clearNotification
          * @function
-         * @param           {string} type                           Status type
+         * @param           {string} type                           Notification type
          */
-        function _clearStatus ( type )
+        function _clearNotification ( type )
         {
             let _button = document.getElementById ( `${type}_button` );
 
 
-            if ( type == 'favourite' )
+            if ( type === 'favourite' )
 
-                document.querySelectorAll ( _ui_data_hooks.stage ) [ 0 ].style.backgroundColor = '';
+                document.querySelectorAll ( _config.internal_data.ui_data_hooks.stage ) [ 0 ].style.backgroundColor = '';
 
 
             if ( _button != null )
@@ -854,14 +1016,34 @@
         }
 
         /**
-         * Checks that status of a particular status type
+         * Checks whether a feature flag is set; @see _config.feature_flags
          * @private
-         * @name _checkStatus
+         * @name _checkNotificationFeatureFlags
          * @function
-         * @param           {string} type                           Status type
+         * @param           {string} type                           Notification type
          */
-        function _checkStatus ( type )
+        function _checkNotificationFeatureFlags ( type )
         {
+            if ( _config.feature_flags [ `skip_${type}` ] && _getStatus ( type ) )
+            {
+                [ 'favourite', 'watch' ].forEach ( ( value ) => _clearNotification ( value ) );
+
+                Mousetrap.trigger ( `${_config.input_hotkeys.next [ 0 ]}` );
+            }
+        }
+
+        /**
+         * Checks that notification of a particular notification type
+         * @private
+         * @name _checkNotification
+         * @function
+         * @param           {string} type                           Notification type
+         */
+        function _checkNotification ( type )
+        {
+            _checkNotificationFeatureFlags ( type );
+
+
             let _flaggedType = 'flagged' + _toTitleCase ( type ) + 'Status';
 
             let _flagged     = localStorage.getItem ( _flaggedType ) || '';
@@ -871,9 +1053,9 @@
 
                 ( _getStatus ( type ) )
 
-                    ? _setStatus   ( type )
+                    ? _setNotification   ( type )
 
-                    : _clearStatus ( type );
+                    : _clearNotification ( type );
         }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -894,9 +1076,9 @@
             {
                 case 'art':
 
-                    _checkStatus ( 'favourite' );
+                    _checkNotification ( 'favourite' );
 
-                    _checkStatus ( 'watch'     );
+                    _checkNotification ( 'watch'     );
 
 
                     break;
@@ -911,19 +1093,32 @@
                 case 'favourites':
                 case 'gallery':
 
-                    let _thumbs = _getPortraitThumbs ( );
+                    if ( _config.feature_flags.show_status_favourite )
+                    {
+                        let _thumbs = _getPortraitThumbs ( );
 
 
-                    for ( let i = 0; i < _thumbs.length; i++ )
+                        for ( let i = 0; i < _thumbs.length; i++ )
 
-                        _setPortraitThumbStyles ( _thumbs [ i ] );
+                            _setPortraitThumbStyles ( _thumbs [ i ] );
+                    }
 
+                    break;
+
+                case 'tier':
+
+                    if ( _config.feature_flags.skip_tier )
+                    {
+                        let _key = _config.input_hotkeys.next [ 0 ];
+
+                        Mousetrap.trigger ( `${_key}` );
+                    }
 
                     break;
 
                 default:
 
-                    console.warn ( `Nothing to do for present url: ${_config.url_reference}.` );
+                    console.warn ( `Nothing to do for present url: ${_config.internal_data.url_reference}.` );
             }
         }
 
@@ -943,57 +1138,52 @@
             {
                 /**
                  * Main configuration settings
-                 * @name config
-                 * @public
-                 * @constant        {Object}  config                    Main configurations object
-                 * @param           {string}  config.accent_colour      Favourited accent colour
-                 * @param           {string}  config.mousetrap_cdn      Mousetrap CDN address
-                 * @param           {boolean} config.favorite_next      Go to next portrait after favoriting
-                 * @param           {number}  config.time_interval      How often to update this script
-                 * @param           {string}  config.url_reference      Present Deviant Art URL
-                 * @param           {string}  config.deviantarturl      Base Deviant Art URL
-                 * @param           {string}  config.input_hotkeys      Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
+                 * @private
+                 * @constant        {Object} config                         Main configurations object
+                 * @param           {Object} config.input_hotkeys           Hotkey(s) associated with each keyboard task; @see _keyboard_tasks
+                 * @param           {Object} config.feature_flags           Various flags for features
+                 * @param           {Array}  config.redirect_urls           Redirect URLs
+                 * @param           {Object} config.internal_data           General abstract data for program
                  */
                 config: _config
             }
 
-            ////    GLOBAL VARIABLES    ////////////////////
-
-                /**
-                 * Redirect URLs
-                 * @name redirect_urls
-                 * @public
-                 * @constant        {Object} config.redirect_urls       Redirect URLs
-                 */
-                _lib.config.redirect_urls = _redirect_urls;
-
-                /**
-                 * Data hooks for UI elements
-                 * @name ui_data_hooks
-                 * @public
-                 * @constant        {Object} config.ui_data_hooks       Data hooks
-                 */
-                _lib.config.ui_data_hooks = _ui_data_hooks;
-
             ////    FUNCTIONS    ///////////////////////////
 
                 /**
-                 * Clears a status type
-                 * @name clearStatus
+                 * Clears a notification type
                  * @public
+                 * @name clearNotification
                  * @function
-                 * @param       {string} type                       Status type
+                 * @param       {string} type                       Notification type
                  */
-                _lib.clearStatus          = ( type ) => _clearStatus ( type );
+                _lib.clearNotification  = ( type ) => _clearNotification ( type );
 
                 /**
-                 * Checks that status of a particular status type
-                 * @name checkStatus
+                 * Checks that notification of a particular notification type
                  * @public
+                 * @name checkNotification
                  * @function
-                 * @param       {string} type                       Status type
+                 * @param       {string} type                       Notification type
                  */
-                _lib.checkStatus          = ( type ) => _checkStatus ( type );
+                _lib.checkNotification  = ( type ) => _checkNotification ( type );
+
+                /**
+                 * Sets whether portrait mode is expanded or not
+                 * @public
+                 * @name setExpand
+                 * @function
+                 */
+                _lib.setExpand          = ( )      => _setExpand   ( );
+
+                /**
+                 * Returns the present page type
+                 * @public
+                 * @name getPageType
+                 * @function
+                 * @return      {Object}                            Page type
+                 */
+                _lib.getPageType        = ( )      => _getPageType ( );
 
 
             return _lib;
@@ -1016,6 +1206,8 @@
             _setMouseTrap      ( );
 
             _setEventListeners ( );
+
+            _setGeneralStyles  ( );
         }
 
 
