@@ -7,6 +7,7 @@
 
 Additional functionality for Deviant Art
 
+- [Features](#features)
 - [Installation](#installation)
   - [Injection](#injection)
     - [Console](#console)
@@ -19,6 +20,154 @@ Additional functionality for Deviant Art
 - [Documentation](#documentation)
 - [Support](#support)
 - [Structure](#structure)
+
+## Features
+
+<table>
+<tr>
+<td>
+
+### Portrait Previous
+
+<i>default keys:</i> <kbd>a</kbd>, <kbd>←</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Previous](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Previous.gif)
+
+</details>
+</td>
+<td>
+
+### Portrait Next
+
+<i>default keys:</i> <kbd>d</kbd>, <kbd>→</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Next.gif)
+
+</details>
+
+</td>
+<td>
+
+### Home / Profile / Back
+
+<i>default keys:</i> <kbd>w</kbd>, <kbd>↑</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Home.gif)
+
+</details>
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### Favourite Portrait
+
+<i>default keys:</i> <kbd>q</kbd>, <kbd>Space</kbd>, <kbd>Enter</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Favourite.gif)
+
+</details>
+
+</td>
+<td>
+
+### Watch User
+
+<i>default keys:</i> <kbd>e</kbd>, <kbd>Shift</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Watch.gif)
+
+</details>
+
+</td>
+<td>
+
+### Expand Portrait Mode
+
+<i>default keys:</i> <kbd>f</kbd>, <kbd>Alt</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Expand.gif)
+
+</details>
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### User Preview
+
+<i>default keys:</i> <kbd>c</kbd>, <kbd>/</kbd>, <kbd>Command</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_User.gif)
+
+</details>
+
+</td>
+<td>
+
+### Redirect
+
+<i>default keys:</i> <kbd>s</kbd>, <kbd>↓</kbd>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Global_Redirect.gif)
+
+</details>
+
+</td>
+<td>
+
+### Gallery Favourite
+
+<i>default keys:</i> <i>none</i>
+
+<details>
+
+<summary><b>Preview</b></summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Gallery_Favourite.gif)
+
+</details>
+
+</td>
+</tr>
+
+</table>
 
 ## Installation
 
