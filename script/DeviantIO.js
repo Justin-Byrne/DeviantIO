@@ -35,7 +35,7 @@
                 home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
                 favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
                 watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
-                expand:    [ "f", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+                expand:    [ "z", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
                 user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
                 redirect:  [ "s", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
             },
