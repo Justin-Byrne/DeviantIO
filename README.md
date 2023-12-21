@@ -7,66 +7,62 @@
 
 Additional functionality for Deviant Art
 
-- [Features](#features)
+- [Hotkeys](#hotkeys)
 - [Installation](#installation)
   - [Injection](#injection)
     - [Console](#console)
     - [Extension](#extension)
     - [Gist](#gist)
 - [Usage](#usage)
-  - [Hotkeys](#hotkeys)
+  - [Input](#input)
   - [Feature Flags](#feature-flags)
   - [General Configuration](#general-configuration)
 - [Documentation](#documentation)
 - [Support](#support)
 - [Structure](#structure)
 
-## Features
+## Hotkeys
+
+### Hotkeys
 
 <table>
+
 <tr>
 <td>
 
-### Portrait Previous
-
-<i>default keys:</i> <kbd>a</kbd>, <kbd>←</kbd>
-
-<details>
-
-<summary><b>Preview</b></summary>
-
-![Previous](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Previous.gif)
-
-</details>
-</td>
-<td>
-
-### Portrait Next
-
-<i>default keys:</i> <kbd>d</kbd>, <kbd>→</kbd>
-
-<details>
-
-<summary><b>Preview</b></summary>
-
-![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Next.gif)
-
-</details>
+<sub>**PORTRAIT**</sub>
+<br>
+<sub>(Favourite)</sub>
 
 </td>
 <td>
 
-### Home / Profile / Back
+<!-- nothing -->
 
-<i>default keys:</i> <kbd>w</kbd>, <kbd>↑</kbd>
+</td>
+<td>
+
+<sub>**REDIRECT**</sub>
+<br>
+<sub>Home</sub>
+
+</td>
+<td>
 
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_down:</summary>
 
 ![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Home.gif)
 
 </details>
+
+</td>
+<td>
+
+<sub>**WATCH**</sub>
+<br>
+<sub>User</sub>
 
 </td>
 </tr>
@@ -74,13 +70,11 @@ Additional functionality for Deviant Art
 <tr>
 <td>
 
-### Favourite Portrait
-
-<i>default keys:</i> <kbd>q</kbd>, <kbd>Space</kbd>, <kbd>Enter</kbd>
+<!-- nothing -->
 
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_right:</summary>
 
 ![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Favourite.gif)
 
@@ -89,30 +83,26 @@ Additional functionality for Deviant Art
 </td>
 <td>
 
-### Watch User
-
-<i>default keys:</i> <kbd>e</kbd>, <kbd>Shift</kbd>
-
-<details>
-
-<summary><b>Preview</b></summary>
-
-![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Watch.gif)
-
-</details>
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-q.svg" />
 
 </td>
 <td>
 
-### Expand Portrait Mode
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-w.svg" />
 
-<i>default keys:</i> <kbd>f</kbd>, <kbd>Alt</kbd>
+</td>
+<td>
+
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-e.svg" />
+
+</td>
+<td>
 
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_left:</summary>
 
-![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Expand.gif)
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Watch.gif)
 
 </details>
 
@@ -122,28 +112,103 @@ Additional functionality for Deviant Art
 <tr>
 <td>
 
-### User Preview
+<sub>**PORTRAIT**</sub>
+<br>
+<sub>Previous</sub>
 
-<i>default keys:</i> <kbd>c</kbd>, <kbd>/</kbd>, <kbd>Command</kbd>
+</td>
+<td>
+
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-a.svg" />
+
+</td>
+<td>
+
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-s-dark.svg" />
+
+</td>
+<td>
+
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-d.svg" />
+
+</td>
+<td>
+
+<sub>**PORTRAIT**</sub>
+<br>
+<sub>Next</sub>
+
+</td>
+</tr>
+
+<tr>
+<td>
 
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_right:</summary>
 
-![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_User.gif)
+![Previous](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Previous.gif)
 
 </details>
 
 </td>
 <td>
 
-### Redirect
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-z.svg" />
 
-<i>default keys:</i> <kbd>s</kbd>, <kbd>↓</kbd>
+</td>
+<td>
+
+<sub>**REDIRECT**</sub>
+<br>
+<sub>Random</sub>
+<br>
+<sub>URL</sub>
+
+</td>
+<td>
+
+<img width="64" src="https://github.com/Justin-Byrne/DeviantIO/blob/main/images/keys/key-c.svg" />
+
+</td>
+<td>
 
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_left:</summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Next.gif)
+
+</details>
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+<sub>**PORTRAIT**</sub>
+<br>
+<sub>Expand</sub>
+
+</td>
+<td>
+
+<details>
+
+<summary>:arrow_up:</summary>
+
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_Expand.gif)
+
+</details>
+
+</td>
+<td>
+
+<details>
+
+<summary>:arrow_up:</summary>
 
 ![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Global_Redirect.gif)
 
@@ -152,21 +217,25 @@ Additional functionality for Deviant Art
 </td>
 <td>
 
-### Gallery Favourite
-
-<i>default keys:</i> <i>none</i>
-
 <details>
 
-<summary><b>Preview</b></summary>
+<summary>:arrow_up:</summary>
 
-![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Gallery_Favourite.gif)
+![Next](https://github.com/Justin-Byrne/DeviantIO/blob/main/images/features/Portrait_User.gif)
 
 </details>
 
 </td>
-</tr>
+<td>
 
+<sub>**REDIRECT**</sub>
+<br>
+<sub>User</sub>
+<br>
+<sub>Gallery</sub>
+
+</td>
+</tr>
 </table>
 
 ## Installation
@@ -204,7 +273,7 @@ There's always a live gist for this project, in case you want to import this scr
 
 ## Usage
 
-### Hotkeys
+### Input
 
 | Input                                            | Task                                     | Mode     |
 | :----------------------------------------------- | ---------------------------------------- | :------: |
@@ -213,7 +282,7 @@ There's always a live gist for this project, in case you want to import this scr
 | <kbd>w</kbd>, <kbd>↑</kbd>                       | Back to Home or Profile                  | Portrait |
 | <kbd>q</kbd>, <kbd>Space</kbd>, <kbd>Enter</kbd> | Add Portrait to Favorites                | Portrait |
 | <kbd>e</kbd>, <kbd>Shift</kbd>                   | Add Deviant User to Watch List           | Portrait |
-| <kbd>f</kbd>, <kbd>Alt</kbd>                     | Toggle Portrait Expanse Mode             | Portrait |
+| <kbd>x</kbd>, <kbd>Alt</kbd>                     | Toggle Portrait Expanse Mode             | Portrait |
 | <kbd>c</kbd>, <kbd>/</kbd>, <kbd>Command</kbd>   | Open Artist's Gallery in New Tab         | Portrait |
 | <kbd>s</kbd>, <kbd>↓</kbd>                       | Redirect to randomized URL in `config`   | Gallery  |
 
@@ -231,7 +300,7 @@ let _config =
         home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
         favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
         watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
-        expand:    [ "f", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+        expand:    [ "x", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
         user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
         redirect:  [ "s", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
     },
@@ -315,7 +384,7 @@ let _config =
         home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
         favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
         watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
-        expand:    [ "f", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+        expand:    [ "x", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
         user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
         redirect:  [ "r", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
     },
