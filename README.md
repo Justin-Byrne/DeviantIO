@@ -23,8 +23,6 @@ Additional functionality for Deviant Art
 
 ## Hotkeys
 
-### Hotkeys
-
 <table>
 
 <tr>
@@ -282,7 +280,7 @@ There's always a live gist for this project, in case you want to import this scr
 | <kbd>w</kbd>, <kbd>↑</kbd>                       | Back to Home or Profile                  | Portrait |
 | <kbd>q</kbd>, <kbd>Space</kbd>, <kbd>Enter</kbd> | Add Portrait to Favorites                | Portrait |
 | <kbd>e</kbd>, <kbd>Shift</kbd>                   | Add Deviant User to Watch List           | Portrait |
-| <kbd>x</kbd>, <kbd>Alt</kbd>                     | Toggle Portrait Expanse Mode             | Portrait |
+| <kbd>z</kbd>, <kbd>Alt</kbd>                     | Toggle Portrait Expanse Mode             | Portrait |
 | <kbd>c</kbd>, <kbd>/</kbd>, <kbd>Command</kbd>   | Open Artist's Gallery in New Tab         | Portrait |
 | <kbd>s</kbd>, <kbd>↓</kbd>                       | Redirect to randomized URL in `config`   | Gallery  |
 
@@ -300,7 +298,7 @@ let _config =
         home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
         favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
         watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
-        expand:    [ "x", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+        expand:    [ "z", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
         user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
         redirect:  [ "s", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
     },
@@ -384,7 +382,7 @@ let _config =
         home:      [ "w", "up"             ],       // [Portrait Mode] : Hotkey(s) to go to the main gallery page
         favourite: [ "q", "space", "enter" ],       // [Portrait Mode] : Hotkey(s) to add picture to favourites
         watch:     [ "e", "shift"          ],       // [Portrait Mode] : Hotkey(s) to add user to watch list
-        expand:    [ "x", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
+        expand:    [ "z", "alt"            ],       // [Portrait Mode] : Hotkey(s) to toggle portrait expanse mode
         user:      [ "c", "/",   "command" ],       // [Portrait Mode] : Hotkey(s) to open current artist's gallery
         redirect:  [ "r", "down"           ]        //     [All Modes] : Hotkey(s) to open a new window with a random redirect; @see _config.redirect_urls
     },
